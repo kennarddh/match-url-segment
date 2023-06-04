@@ -46,6 +46,15 @@ const route: IRoute = {
 						controller: () => 'controller',
 						method: 'GET',
 					},
+					{
+						path: ':id/balance/:count',
+						middlewares: {
+							before: ['balance12'],
+							after: ['balance22'],
+						},
+						controller: () => 'controller2',
+						method: 'POST',
+					},
 				],
 			},
 		},
