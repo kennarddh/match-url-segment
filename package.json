@@ -1,0 +1,18 @@
+{
+	"name": "match-url-segment",
+	"version": "1.0.0",
+	"description": "Match url segment",
+	"main": "dist/index.js",
+	"devDependencies": {
+		"ts-node": "^10.9.1",
+		"typescript": "^5.1.3"
+	},
+	"scripts": {
+		"start": "ts-node index.ts"
+	},
+	"keywords": [
+		"typescript"
+	],
+	"author": "kennarddh",
+	"license": "MIT"
+}
