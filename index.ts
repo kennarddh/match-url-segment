@@ -100,7 +100,10 @@ const Match = (
 			middlewares.before.push(...path.middlewares.before)
 			middlewares.after.push(...path.middlewares.after)
 
-			if (path.controller) {
+			if (
+				path.controller &&
+				(path.method === method || path.method === 'ALL')
+			) {
 				// end
 				return {
 					controller: path.controller,
@@ -128,6 +131,6 @@ const Match = (
 }
 
 const url = 'user/3/userId/balance/2'
-const method: IMethod = 'ALL'
+const method: IMethod = 'GET'
 
 console.log(Match(url.split('/'), method, route))
