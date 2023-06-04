@@ -27,13 +27,10 @@ interface IRoute {
 
 type IMethod = 'ALL' | 'POST' | 'GET'
 
-const url = 'user/id/balance'
-const method: IMethod = 'ALL'
-
 const route: IRoute = {
 	paths: [
 		{
-			path: 'user',
+			path: 'user/:count2',
 			middlewares: {
 				before: ['user1'],
 				after: ['user2'],
@@ -41,7 +38,7 @@ const route: IRoute = {
 			route: {
 				paths: [
 					{
-						path: ':id/balance',
+						path: ':id/balance/:count',
 						middlewares: {
 							before: ['balance1'],
 							after: ['balance2'],
@@ -60,8 +57,15 @@ const Match = (
 	method: IMethod,
 	route: IRoute,
 	unmatchedUrl: string[] | null = null,
-	middlewares: IMiddleware = { after: [], before: [] }
-): { controller: IController; middlewares: IMiddleware } | undefined => {
+	middlewares: IMiddleware = { after: [], before: [] },
+	params: Record<string, string> = {}
+):
+	| {
+			controller: IController
+			middlewares: IMiddleware
+			params: Record<string, string>
+	  }
+	| undefined => {
 	if (unmatchedUrl === null) {
 		unmatchedUrl = url
 	}
@@ -86,6 +90,10 @@ const Match = (
 
 				break
 			}
+
+			if (pathSliced[i].startsWith(':')) {
+				params[pathSliced[i].substring(1)] = unmatchedUrl[i]
+			}
 		}
 
 		if (match) {
@@ -100,6 +108,7 @@ const Match = (
 						after: [...middlewares.after].reverse(),
 						before: middlewares.before,
 					},
+					params,
 				}
 			} else if (!path.controller) {
 				// partial
@@ -108,7 +117,8 @@ const Match = (
 					method,
 					path.route,
 					unmatchedUrlCopy,
-					middlewares
+					middlewares,
+					params
 				)
 			}
 		}
@@ -116,5 +126,8 @@ const Match = (
 
 	return undefined
 }
+
+const url = 'user/3/userId/balance/2'
+const method: IMethod = 'ALL'
 
 console.log(Match(url.split('/'), method, route))
