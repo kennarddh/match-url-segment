@@ -60,9 +60,8 @@ const Match = (
 	method: IMethod,
 	route: IRoute,
 	unmatchedUrl: string[] | null = null,
-	beforeMiddlewares: IMiddleware[] = [],
-	afterMiddlewares: IMiddleware[] = []
-): { controller: IController } | undefined => {
+	middlewares: IMiddleware = { after: [], before: [] }
+): { controller: IController; middlewares: IMiddleware } | undefined => {
 	if (unmatchedUrl === null) {
 		unmatchedUrl = url
 	}
@@ -90,12 +89,27 @@ const Match = (
 		}
 
 		if (match) {
+			middlewares.before.push(...path.middlewares.before)
+			middlewares.after.push(...path.middlewares.after)
+
 			if (path.controller) {
 				// end
-				return { controller: path.controller }
+				return {
+					controller: path.controller,
+					middlewares: {
+						after: [...middlewares.after].reverse(),
+						before: middlewares.before,
+					},
+				}
 			} else if (!path.controller) {
 				// partial
-				return Match(url, method, path.route, unmatchedUrlCopy)
+				return Match(
+					url,
+					method,
+					path.route,
+					unmatchedUrlCopy,
+					middlewares
+				)
 			}
 		}
 	}
